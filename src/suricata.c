@@ -223,7 +223,7 @@ intmax_t max_pending_packets;
 /** set caps or not */
 int sc_set_caps;
 
-char *conf_filename = NULL;
+char *conf_filename = NULL; // suricata.yaml
 
 int RunmodeIsUnittests(void) {
     if (run_mode == RUNMODE_UNITTEST)
@@ -1047,6 +1047,7 @@ int main(int argc, char **argv)
             exit(EXIT_SUCCESS);
             break;
         case 'i':
+			// 指定interface对应的设备进行pcap监听
             memset(pcap_dev, 0, sizeof(pcap_dev));
             strlcpy(pcap_dev, optarg, ((strlen(optarg) < sizeof(pcap_dev)) ? (strlen(optarg)+1) : (sizeof(pcap_dev))));
             PcapTranslateIPToDevice(pcap_dev, sizeof(pcap_dev));
@@ -1062,11 +1063,13 @@ int main(int argc, char **argv)
                 run_mode = RUNMODE_PCAP_DEV;
                 LiveRegisterDevice(pcap_dev);
             } else if (run_mode == RUNMODE_PCAP_DEV) {
+				// 指定多个 pcap_dev
 #ifdef OS_WIN32
                 SCLogError(SC_ERR_PCAP_MULTI_DEV_NO_SUPPORT, "pcap multi dev "
                         "support is not (yet) supported on Windows.");
                 exit(EXIT_FAILURE);
 #else
+				// 多个 pcap_dev 还在试验阶段
                 SCLogWarning(SC_WARN_PCAP_MULTI_DEV_EXPERIMENTAL, "using "
                         "multiple pcap devices to get packets is experimental.");
                 LiveRegisterDevice(pcap_dev);
@@ -1809,6 +1812,7 @@ int main(int argc, char **argv)
     //AppLayerDetectProtoThreadSpawn();
 
     /* Spawn the perf counter threads.  Let these be the last one spawned */
+	// 全包线程队列至少有一个读者写者
     SCPerfSpawnThreads();
 
     /* Check if the alloted queues have at least 1 reader and writer */
@@ -1834,6 +1838,7 @@ int main(int argc, char **argv)
 #endif
 
     int engine_retval = EXIT_SUCCESS;
+	// 循环检查线程
     while(1) {
         if (suricata_ctl_flags != 0) {
             SCLogDebug("signal received");
@@ -1885,7 +1890,7 @@ int main(int argc, char **argv)
 
             break;
         }
-
+		// 检查线程状态，如果异常则重新启动线程
         TmThreadCheckThreadState();
 
         usleep(10* 1000);

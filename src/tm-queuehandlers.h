@@ -45,7 +45,7 @@ typedef struct Tmqh_ {
     void (*OutHandlerCtxFree)(void *);
     void (*RegisterTests)(void);
 } Tmqh;
-
+// 线程队列处理回调函数表
 Tmqh tmqh_table[TMQH_SIZE];
 
 void TmqhSetup (void);

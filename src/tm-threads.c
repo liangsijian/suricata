@@ -414,6 +414,7 @@ void *TmThreadsSlot1(void *td)
 
     TmThreadsSetFlag(tv, THV_INIT_DONE);
     while (run) {
+		// 检查是否暂停
         TmThreadTestThreadUnPaused(tv);
 
         /* input a packet */
