@@ -41,6 +41,7 @@
 /* Used to parse the interval for Timebased counters */
 #define SC_PERF_PCRE_TIMEBASED_INTERVAL "^(?:(\\d+)([shm]))(?:(\\d+)([shm]))?(?:(\\d+)([shm]))?$"
 
+// yaml stats 统计
 static SCPerfOPIfaceContext *sc_perf_op_ctx = NULL;
 static time_t sc_start_time;
 /** refresh interval in seconds */

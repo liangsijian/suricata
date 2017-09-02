@@ -1413,6 +1413,7 @@ int main(int argc, char **argv)
     }
 
     /* hardcoded initialization code */
+	// 注册规则解析中的关键字
     SigTableSetup(); /* load the rule keywords */
     if (list_keywords) {
         SigTableList();
@@ -1421,8 +1422,10 @@ int main(int argc, char **argv)
     TmqhSetup();
 
     CIDRInit();
+	// 正则解析规则
     SigParsePrepare();
     //PatternMatchPrepare(mpm_ctx, MPM_B2G);
+    // stats.log 统计日志
     SCPerfInitCounterApi();
 #ifdef PROFILING
     SCProfilingInit();
@@ -1629,7 +1632,7 @@ int main(int argc, char **argv)
 #endif /* UNITTESTS */
 
     TmModuleRunInit();
-
+	// 守护进程
     if (daemon == 1) {
         Daemonize();
         if (pid_filename == NULL) {
@@ -1686,7 +1689,7 @@ int main(int argc, char **argv)
         sc_set_caps = TRUE;
     }
 #endif /* OS_WIN32 */
-
+	// 以太网数据包池预分配内存
     PacketPoolInit(max_pending_packets);
     HostInitConfig(HOST_VERBOSE);
     FlowInitConfig(FLOW_VERBOSE);

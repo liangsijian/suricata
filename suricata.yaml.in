@@ -254,7 +254,7 @@ af-packet:
 # make sure to define the values at "- custom-values" as your convenience.
 # Usually you would prefer medium/high/low.
 #
-# "sgh mpm-context", indicates how the staging should allot mpm contexts for
+# "sgh-mpm-context", indicates how the staging should alloc mpm contexts for
 # the signature groups.  "single" indicates the use of a single context for
 # all the signature group heads.  "full" indicates a mpm-context for each
 # group head.  "auto" lets the engine decide the distribution of contexts
