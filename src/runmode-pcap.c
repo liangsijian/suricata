@@ -117,7 +117,7 @@ void *ParsePcapConfig(const char *iface)
     if ((ConfGet("bpf-filter", &tmpbpf)) == 1) {
         aconf->bpf_filter = tmpbpf;
     }
-
+	// 初始引用计数1
     SC_ATOMIC_INIT(aconf->ref);
     (void) SC_ATOMIC_ADD(aconf->ref, 1);
     aconf->DerefFunc = PcapDerefConfig;
@@ -129,7 +129,7 @@ void *ParsePcapConfig(const char *iface)
         SCLogInfo("Unable to find pcap config using default value");
         return aconf;
     }
-
+	// 加入 interface 是 eth0 可以在配置中添加一个 eth0 的配置
     if_root = ConfNodeLookupKeyValue(pcap_node, "interface", iface);
     if (if_root == NULL) {
         SCLogInfo("Unable to find pcap config for "
@@ -137,7 +137,7 @@ void *ParsePcapConfig(const char *iface)
                   iface);
         return aconf;
     }
-
+	// 线程数
     if (ConfGetChildValue(if_root, "threads", &threadsstr) != 1) {
         aconf->threads = 1;
     } else {

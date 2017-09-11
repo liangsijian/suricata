@@ -639,6 +639,7 @@ int SigLoadSignatures(DetectEngineCtx *de_ctx, char *sig_file, int sig_file_excl
     }
 
     /* ok, let's load signature files from the general config */
+	// 加载suricata规则文件
     if (!(sig_file != NULL && sig_file_exclusive == TRUE)) {
         rule_files = ConfGetNode("rule-files");
         if (rule_files != NULL) {

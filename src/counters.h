@@ -187,7 +187,7 @@ typedef struct SCPerfCounterArray_ {
  */
 typedef struct SCPerfClubTMInst_ {
     char *tm_name;
-
+	// 一个 thread 下面会有多个 SCPerfContext，按照 SCPerfContext 的 curr_id 排序
     SCPerfContext **head;
     uint32_t size;
 

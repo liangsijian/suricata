@@ -196,6 +196,7 @@ static int PcapTryReopen(PcapThreadVars *ptv)
 #endif
 
 void PcapCallbackLoop(char *user, struct pcap_pkthdr *h, u_char *pkt) {
+	// libpcap 回调函数
     SCEnter();
 
     PcapThreadVars *ptv = (PcapThreadVars *)user;
@@ -254,6 +255,7 @@ TmEcode ReceivePcapLoop(ThreadVars *tv, void *data, void *slot)
     uint16_t packet_q_len = 0;
     PcapThreadVars *ptv = (PcapThreadVars *)data;
     TmSlot *s = (TmSlot *)slot;
+	// s 为当前的接收pcap模块，数据包需要后续的slot处理，将slot设置为后续被调用的slot
     ptv->slot = s->slot_next;
     ptv->cb_result = TM_ECODE_OK;
     int r;
@@ -277,7 +279,7 @@ TmEcode ReceivePcapLoop(ThreadVars *tv, void *data, void *slot)
         } while (packet_q_len == 0);
 
         /* Right now we just support reading packets one at a time. */
-        r = pcap_dispatch(ptv->pcap_handle, (int)packet_q_len,
+        r = pcap_dispatch(ptv->pcap_handle, (int)packet_q_len, // 获取缓冲区个数大小的包
                 (pcap_handler)PcapCallbackLoop, (u_char *)ptv);
         if (unlikely(r < 0)) {
             int dbreak = 0;

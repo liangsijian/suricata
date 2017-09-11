@@ -757,6 +757,7 @@ static uint16_t SCPerfRegisterQualifiedCounter(char *cname, char *tm_name,
         return 0;
     }
 
+	// 查找
     temp = prev = *head;
     while (temp != NULL) {
         prev = temp;
@@ -848,9 +849,9 @@ static uint16_t SCPerfRegisterQualifiedCounter(char *cname, char *tm_name,
 
     /* we now add the counter to the list */
     if (prev == NULL)
-        *head = pc;
+        *head = pc; // 未建立设置链表头
     else
-        prev->next = pc;
+        prev->next = pc; // 插入链表尾部
 
     return pc->id;
 }
@@ -1493,6 +1494,7 @@ int SCPerfAddToClubbedTMTable(char *tm_name, SCPerfContext *pctx)
     }
 
     /* get me the bugger who wrote this junk of a code :P */
+	// 未找到tm_name对应的pctmi,创建一个并将perf context添加到head数组中
     if (pctmi == NULL) {
         if ( (temp = SCMalloc(sizeof(SCPerfClubTMInst))) == NULL) {
             SCMutexUnlock(&sc_perf_op_ctx->pctmi_lock);
@@ -1519,6 +1521,7 @@ int SCPerfAddToClubbedTMTable(char *tm_name, SCPerfContext *pctx)
     }
 
     /* see if the pctx is already part of this pctmi */
+	// 防止已经添加
     hpctx = pctmi->head;
     for (u = 0; u < pctmi->size; u++) {
         if (hpctx[u] != pctx)
@@ -1537,6 +1540,7 @@ int SCPerfAddToClubbedTMTable(char *tm_name, SCPerfContext *pctx)
     hpctx = pctmi->head;
 
     hpctx[pctmi->size] = pctx;
+	// 插入排序，最后 hpctx 数组的元素按照 curr_id 排序
     for (u = pctmi->size - 1; u > 0; u--) {
         if (pctx->curr_id <= hpctx[u]->curr_id) {
             hpctx[u + 1] = hpctx[u];

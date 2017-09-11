@@ -549,7 +549,7 @@ void DecodeIPV4(ThreadVars *tv, DecodeThreadVars *dtv, Packet *p, uint8_t *pkt, 
                 IPV4_GET_DF(p), IPV4_GET_MF(p), IPV4_GET_IPID(p));
     }
 #endif /* DEBUG */
-
+	// 传输层
     /* check what next decoder to invoke */
     switch (IPV4_GET_IPPROTO(p)) {
         case IPPROTO_TCP:

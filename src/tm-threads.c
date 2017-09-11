@@ -499,7 +499,7 @@ TmEcode TmThreadsSlotVarRun(ThreadVars *tv, Packet *p,
     TmEcode r;
     TmSlot *s;
     Packet *extra_p;
-
+	// 调用每个 slot 的处理函数处理包
     for (s = slot; s != NULL; s = s->slot_next) {
         PACKET_PROFILING_TMM_START(p, s->tm_id);
 
@@ -532,6 +532,7 @@ TmEcode TmThreadsSlotVarRun(ThreadVars *tv, Packet *p,
 
             /* see if we need to process the packet */
             if (s->slot_next != NULL) {
+				// 递归调用
                 r = TmThreadsSlotVarRun(tv, extra_p, s->slot_next);
                 if (unlikely(r == TM_ECODE_FAILED)) {
                     TmqhReleasePacketsToPacketPool(&s->slot_pre_pq);
@@ -631,7 +632,7 @@ void *TmThreadsSlotPktAcqLoop(void *td) {
     }
 
     TmThreadsSetFlag(tv, THV_INIT_DONE);
-
+	// 循环获取数据包
     while(run) {
         TmThreadTestThreadUnPaused(tv);
 
@@ -889,7 +890,7 @@ ThreadVars *TmThreadsGetTVContainingSlot(TmSlot *tm_slot)
 void TmSlotSetFuncAppend(ThreadVars *tv, TmModule *tm, void *data)
 {
     TmSlot *s = (TmSlot *)tv->tm_slots;
-
+	// 创建新的slot
     TmSlot *slot = SCMalloc(sizeof(TmSlot));
     if (slot == NULL)
         return;
@@ -904,10 +905,12 @@ void TmSlotSetFuncAppend(ThreadVars *tv, TmModule *tm, void *data)
     slot->SlotThreadDeinit = tm->ThreadDeinit;
     /* we don't have to check for the return value "-1".  We wouldn't have
      * received a TM as arg, if it didn't exist */
+    // 指明所属的thread module id
     slot->tm_id = TmModuleGetIDForTM(tm);
 
     tv->cap_flags |= tm->cap_flags;
 
+	// 链接slot链表并设置id
     if (s == NULL) {
         tv->tm_slots = slot;
         slot->id = 0;

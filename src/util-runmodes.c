@@ -455,6 +455,7 @@ int RunModeSetLiveCaptureAutoFp(DetectEngineCtx *de_ctx,
                 SCLogError(SC_ERR_RUNMODE, "TmThreadsCreate failed");
                 exit(EXIT_FAILURE);
             }
+			// 第一个槽必须是 recv module
             TmModule *tm_module = TmModuleGetByName(recv_mod_name);
             if (tm_module == NULL) {
                 SCLogError(SC_ERR_RUNMODE,
@@ -622,6 +623,7 @@ static int RunModeSetLiveCaptureWorkersForDevice(DetectEngineCtx *de_ctx,
     }
 
     /* create the threads */
+	// 将与pcap关联的module添加到slots中 创建线程开始运行
     for (thread = 0; thread < threads_count; thread++) {
         char tname[20];
         char *n_thread_name = NULL;
@@ -686,7 +688,7 @@ static int RunModeSetLiveCaptureWorkersForDevice(DetectEngineCtx *de_ctx,
         SetupOutputs(tv);
 
         TmThreadSetCPU(tv, DETECT_CPU_SET);
-
+		// 开始运行
         if (TmThreadSpawn(tv) != TM_ECODE_OK) {
             SCLogError(SC_ERR_THREAD_SPAWN, "TmThreadSpawn failed");
             exit(EXIT_FAILURE);

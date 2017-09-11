@@ -34,23 +34,24 @@ typedef struct TmSlot_ {
     ThreadVars *tv;
 
     /* function pointers */
+	// 包处理函数
     TmEcode (*SlotFunc)(ThreadVars *, Packet *, void *, PacketQueue *,
                         PacketQueue *);
 
     TmEcode (*PktAcqLoop)(ThreadVars *, void *, void *);
 
-    TmEcode (*SlotThreadInit)(ThreadVars *, void *, void **);
+    TmEcode (*SlotThreadInit)(ThreadVars *, void *, void **); // tm_func 被调用初始化模块
     void (*SlotThreadExitPrintStats)(ThreadVars *, void *);
     TmEcode (*SlotThreadDeinit)(ThreadVars *, void *);
 
     /* data storage */
-    void *slot_initdata;
-    SC_ATOMIC_DECLARE(void *, slot_data);
+    void *slot_initdata; // 传递给 SlotThread* 函数的第二参数
+    SC_ATOMIC_DECLARE(void *, slot_data); // 传递给 SlotThread* 函数的第三参数
 
     /* queue filled by the SlotFunc with packets that will
      * be processed futher _before_ the current packet.
      * The locks in the queue are NOT used */
-    PacketQueue slot_pre_pq;
+    PacketQueue slot_pre_pq; // 在当前包放入 tv->tmqh_out 之前被处理的包
 
     /* queue filled by the SlotFunc with packets that will
      * be processed futher _after_ the current packet. The
@@ -127,7 +128,9 @@ static inline TmEcode TmThreadsSlotProcessPkt(ThreadVars *tv, TmSlot *s, Packet 
         tv->tmqh_out(tv, p);
         return r;
     }
-
+	// 如果处理当前包 p 之后，有往s->slot_pre_pq中添加包，会预先递归调用后续的
+	// s->SlotFunc处理，并在 p 放入 tv->tmqh_out 之前将先将 s->slot_pre_pq 处理
+	// 的结果入队列
     if (TmThreadsSlotVarRun(tv, p, s) == TM_ECODE_FAILED) {
         TmqhOutputPacketpool(tv, p);
         TmSlot *slot = s;
@@ -142,11 +145,13 @@ static inline TmEcode TmThreadsSlotProcessPkt(ThreadVars *tv, TmSlot *s, Packet 
         r = TM_ECODE_FAILED;
 
     } else {
+		// 当前包处理完之后放入输出队列
         tv->tmqh_out(tv, p);
 
         /* post process pq */
         TmSlot *slot = s;
         while (slot != NULL) {
+			// 有后置包处理，在 p 放入 tmqh_out 之后在将后置包放入
             if (slot->slot_post_pq.top != NULL) {
                 while (1) {
                     SCMutexLock(&slot->slot_post_pq.mutex_q);

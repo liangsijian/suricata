@@ -1474,6 +1474,7 @@ static inline int DetectEngineSignatureIsDuplicate(DetectEngineCtx *de_ctx,
     sw->s = sig;
 
     /* check if we have a duplicate entry for this signature */
+	// 通过 gid 和 sid 比较
     sw_dup = HashListTableLookup(de_ctx->dup_sig_hash_table, (void *)sw, 0);
     /* we don't have a duplicate entry for this sig */
     if (sw_dup == NULL) {
@@ -1581,7 +1582,7 @@ end:
  */
 Signature *DetectEngineAppendSig(DetectEngineCtx *de_ctx, char *sigstr)
 {
-    Signature *sig = SigInit(de_ctx, sigstr);
+    Signature *sig = SigInit(de_ctx, sigstr); // 双向规则会通过链表链接返回两个
     if (sig == NULL) {
         return NULL;
     }
@@ -1598,7 +1599,7 @@ Signature *DetectEngineAppendSig(DetectEngineCtx *de_ctx, char *sigstr)
                 " so the older sig replaced by this new signature \"%s\"",
                 sigstr);
     }
-
+	// 循环链表
     if (sig->init_flags & SIG_FLAG_INIT_BIDIREC) {
         if (sig->next != NULL) {
             sig->next->next = de_ctx->sig_list;

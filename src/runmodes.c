@@ -226,6 +226,7 @@ void RunModeListRunmodes(void)
 
 void RunModeDispatch(int runmode, const char *custom_mode, DetectEngineCtx *de_ctx)
 {
+	// runmode 运行模式 custom_mode 自定义模式，runmode 可以有多种 custom_mode
     if (custom_mode == NULL) {
         char *val = NULL;
         if (ConfGet("runmode", &val) != 1) {
@@ -298,7 +299,7 @@ void RunModeDispatch(int runmode, const char *custom_mode, DetectEngineCtx *de_c
 
 /**
  * \brief Registers a new runmode.
- *
+ * 
  * \param runmode     Runmode type.
  * \param name        Custom mode for this specific runmode type.  Within each
  *                    runmode type, each custom name is a primary key.
@@ -309,6 +310,7 @@ void RunModeRegisterNewRunMode(int runmode, const char *name,
                                const char *description,
                                int (*RunModeFunc)(DetectEngineCtx *))
 {
+	// 每个mode下面可以有多种运行方式，自定义一个name作为标识，
     if (RunModeGetCustomMode(runmode, name) != NULL) {
         SCLogError(SC_ERR_RUNMODE, "A runmode by this custom name has already "
                    "been registered.  Please use an unique name");

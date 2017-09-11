@@ -37,7 +37,7 @@ typedef struct TmModule_ {
     char *name;
 
     /** thread handling */
-    TmEcode (*ThreadInit)(ThreadVars *, void *, void **);
+    TmEcode (*ThreadInit)(ThreadVars *, void *, void **); // 赋值给 TmSlot.SlotThreadInit 调用
     void (*ThreadExitPrintStats)(ThreadVars *, void *);
     TmEcode (*ThreadDeinit)(ThreadVars *, void *);
 

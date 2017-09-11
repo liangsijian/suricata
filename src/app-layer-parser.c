@@ -65,7 +65,7 @@ AppLayerProto al_proto_table[ALPROTO_MAX];   /**< Application layer protocol
                                                 corresponding parsers */
 
 #define MAX_PARSERS 100
-static AppLayerParserTableElement al_parser_table[MAX_PARSERS];
+static AppLayerParserTableElement al_parser_table[MAX_PARSERS]; // 0节点没用使用
 static uint16_t al_max_parsers = 0; /* incremented for every registered parser */
 
 static Pool *al_result_pool = NULL;
@@ -1380,7 +1380,7 @@ void AppLayerParsersInitPostProcess(void)
         /* no local parser */
         if (al_parser_table[u16].parser_local_id == 0)
             continue;
-
+		// 最大 parser_local_id 作为map_size
         if (al_parser_table[u16].parser_local_id >
                 al_proto_table[al_parser_table[u16].proto].map_size)
         {
@@ -1425,7 +1425,7 @@ void AppLayerParsersInitPostProcess(void)
                     exit(EXIT_FAILURE);
                 }
 
-                al_proto_table[u16].map[parser_local_id]->parser_id = u;
+                al_proto_table[u16].map[parser_local_id]->parser_id = u; // al_parser_table 的下标
             }
         }
     }

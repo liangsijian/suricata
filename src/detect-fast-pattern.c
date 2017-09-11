@@ -57,6 +57,7 @@ SCFPSupportSMList *sm_fp_support_smlist_list = NULL;
  */
 static void SupportFastPatternForSigMatchList(int list_id)
 {
+	// 防止重复
     if (sm_fp_support_smlist_list != NULL) {
         SCFPSupportSMList *tmp_smlist_fp = sm_fp_support_smlist_list;
         while (tmp_smlist_fp != NULL) {
@@ -66,6 +67,7 @@ static void SupportFastPatternForSigMatchList(int list_id)
         }
     }
 
+	// 添加
     SCFPSupportSMList *new_smlist_fp = SCMalloc(sizeof(SCFPSupportSMList));
     if (new_smlist_fp == NULL) {
         SCLogError(SC_ERR_MEM_ALLOC, "Error allocating memory");

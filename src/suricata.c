@@ -703,7 +703,7 @@ int main(int argc, char **argv)
     if (SCSetThreadName("Suricata-Main") < 0) {
         SCLogWarning(SC_ERR_THREAD_INIT, "Unable to set thread name");
     }
-
+	// 注册运行模式
     RunModeRegisterRunModes();
 
     /* By default use IDS mode, but if nfq or ipfw
@@ -1749,12 +1749,12 @@ int main(int argc, char **argv)
     gettimeofday(&start_time, NULL);
 
     SCDropMainThreadCaps(userid, groupid);
-
+	// 输出模块初始化，对应yaml的outputs字段
     RunModeInitializeOutputs();
 
     /* run the selected runmode */
     if (run_mode == RUNMODE_PCAP_DEV) {
-        if (strlen(pcap_dev) == 0) {
+        if (strlen(pcap_dev) == 0) { // 没用在命令行中设置
             int ret = LiveBuildDeviceList("pcap");
             if (ret == 0) {
                 fprintf(stderr, "ERROR: No interface found in config for pcap\n");
